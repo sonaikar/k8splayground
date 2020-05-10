@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver
+  # namespace: test
+  labels:
+    app: webserver
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: web
+        image: artifactory.cetdevops.com/docker/nginx:1.3
+        ports:
+          - name: webport
+            containerPort: 80
+            protocol: TCP

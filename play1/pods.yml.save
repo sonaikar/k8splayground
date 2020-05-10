@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: podexample
+  labels:
+    app: webserver
+  namespace: test
+spec:
+  containers:
+  - name: web
+    image: nginx:1.16
+    ports:
+      - name: webport
+        containerPort: 80
+        protocol: TCP
