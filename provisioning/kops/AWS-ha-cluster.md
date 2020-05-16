@@ -56,7 +56,7 @@ kops create cluster \
     --networking weave \
     --cloud-labels "Team=DevOps,Owner=Sameer Sonaikar" \
     --image 293135079892/k8s-1.4-debian-jessie-amd64-hvm-ebs-2016-11-16 \
-    --state "s3://cluster1-cetdevops-com-state-store"
+    --state "s3://cluster1-cetdevops-com-state-store" \
     ${NAME}
 ```
 

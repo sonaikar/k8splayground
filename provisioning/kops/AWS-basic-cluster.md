@@ -142,7 +142,7 @@ export KOPS_STATE_STORE=s3://cluster1-cetdevops-com-state-store
 We will need to note which availability zones are available to us. In this example we will be deploying our cluster to the us-eas-1 region
 
 ```shell script
-aws ec2 describe-availability-zones --region us-eas-1
+    aws ec2 describe-availability-zones --region us-east-1
 ```
 
 Below is a create cluster command. We'll use the most basic example possible, with more verbose examples in high availability. The below command will generate a cluster configuration, but will not start building it. Make sure you have generated an SSH key pair before creating your cluster.
