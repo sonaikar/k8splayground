@@ -10,7 +10,7 @@
 ### 2. Create Route53 subdomain 
     - Create sub domain and create NS records in parent domain
     ```
-    $ aws route53 create-hosted-zone --name cluster1.cetevops.com --caller-reference 1
+    $ aws route53 create-hosted-zone --name cluster1.cetdevops.com --caller-reference 1
     ```
     Verify if domain has been setup corectly. 
     You should see the 4 NS records that Route53 assigned your hosted zone
