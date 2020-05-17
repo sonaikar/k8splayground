@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-demo-pod
+spec:
+  containers:
+    - name: demo
+      image: nginx:1.16
+      env:
+        # Define the environment variable
+        - name: myName
+          valueFrom:
+            configMapKeyRef:
+              name: game-demo
+              key: myName
+        - name: myFriend
+          valueFrom:
+            configMapKeyRef:
+              name: game-demo
+              key: myFriend
+      volumeMounts:
+      - name: config
+        mountPath: "/config"
+        readOnly: true
+  volumes:
+    # You set volumes at the Pod level, then mount them into containers inside that Pod
+    - name: config
+      configMap:
+        # Provide the name of the ConfigMap you want to mount.
+        name: game-demo

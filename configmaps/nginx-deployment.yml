@@ -2,11 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: webserver
-  namespace: test
   labels:
     app: webserver
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: webserver
@@ -14,6 +13,8 @@ spec:
     metadata:
       labels:
         app: webserver
+      annotations:
+        configmap.reloader.stakater.com/reload: "nginx-config"
     spec:
       containers:
       - name: web
@@ -22,5 +23,13 @@ spec:
           - name: webport
             containerPort: 80
             protocol: TCP
+        volumeMounts:
+        - name: nginx-config
+          mountPath: "/etc/nginx/conf.d/"
+          readOnly: true
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginxconfigmap
 
 

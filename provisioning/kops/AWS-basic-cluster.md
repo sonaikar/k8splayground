@@ -56,7 +56,7 @@ In this scenario you want to contain all kubernetes records under a subdomain of
 - Create the subdomain, and note your SUBDOMAIN name servers
     ```shell script
     # Note: This example assumes you have jq installed locally.
-    ID=$(uuidgen) && aws route53 create-hosted-zone --name cluster1.cetdevops.com --caller-reference $ID | \
+    ID=$(uuidgen) && aws route53 create-hosted-zone --name kcluster.cetdevops.com --caller-reference $ID | \
     jq .DelegationSet.NameServers
     ```
 - Note your PARENT hosted zone id
@@ -72,7 +72,7 @@ In this scenario you want to contain all kubernetes records under a subdomain of
     {
       "Action": "CREATE",
       "ResourceRecordSet": {
-        "Name": "cluster1.cetdevops.com",
+        "Name": "kcluster.cetdevops.com",
         "Type": "NS",
         "TTL": 300,
         "ResourceRecords": [
@@ -106,7 +106,7 @@ aws route53 change-resource-record-sets \
 You should now be able to dig your domain (or subdomain) and see the AWS Name Servers on the other end.
 
 ```shell script
-dig ns cluster1.cetdevops.com
+dig ns kcluster.cetdevops.com
 ```  
 This is a critical component when setting up clusters. 
 If you are experiencing problems with the Kubernetes API not coming up, chances are something is wrong with the cluster's DNS.
@@ -120,22 +120,22 @@ We recommend keeping the creation of this bucket confined to us-east-1, otherwis
 
 ```shell script
 aws s3api create-bucket \
-    --bucket cluster1-cetdevops-com-state-store \
+    --bucket kcluster-cetdevops-com-state-store \
     --region us-east-1
 ```
 
 #### Note: We STRONGLY recommend versioning your S3 bucket in case you ever need to revert or recover a previous state store.    
 
 ```shell script
-aws s3api put-bucket-versioning --bucket cluster1-cetdevops-com-state-store  --versioning-configuration Status=Enabled
+aws s3api put-bucket-versioning --bucket kcluster-cetdevops-com-state-store  --versioning-configuration Status=Enabled
 ```
 
 ## Creating your first cluster
 We're ready to start creating our first cluster! Let's first set up a few environment variables to make the process easier.
 
 ```shell script
-export NAME=cluster1.cetdevops.com
-export KOPS_STATE_STORE=s3://cluster1-cetdevops-com-state-store
+export NAME=kcluster.cetdevops.com
+export KOPS_STATE_STORE=s3://kcluster-cetdevops-com-state-store
 ```
 
 ### Create cluster configuration
