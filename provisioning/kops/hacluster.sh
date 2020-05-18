@@ -96,12 +96,11 @@ kops create cluster \
     --image "ami-05801d0a3c8e4c443" \
     --state "s3://kcluster-cetdevops-com-state-store" \
     --bastion \
-    --target terraform \
-    --out . \
     ${NAME}
 
 
-
+    --target terraform \
+    --out . \
 #
 Suggestions:
  * list clusters with: kops get cluster

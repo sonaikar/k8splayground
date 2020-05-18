@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webserver
+spec:
+  volumes:
+  - name: cloud-storage
+    persistentVolumeClaim:
+      claimName: aws-pvc
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: cloud-storage
+      mountPath: /cloud/data
