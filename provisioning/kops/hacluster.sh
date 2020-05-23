@@ -90,15 +90,14 @@ kops create cluster \
     --dns-zone Z0152517T0FAIUKH6N2U \
     --node-size t2.medium \
     --master-size t2.medium \
-    --topology private \
+    --topology public \
     --networking calico \
     --cloud-labels "Team=DevOps,Owner=Sameer Sonaikar" \
     --image "ami-05801d0a3c8e4c443" \
     --state "s3://kcluster-cetdevops-com-state-store" \
-    --bastion \
     ${NAME}
 
-
+    --bastion \
     --target terraform \
     --out . \
 #
