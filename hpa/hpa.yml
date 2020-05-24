@@ -1,13 +1,13 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: landing
+  name: webserverhpa
   namespace: test
 spec:
   scaleTargetRef:
     apiVersion: apps/v1beta1
     kind: Deployment
-    name: landing
+    name: webserver
   minReplicas: 1
   maxReplicas: 10
   metrics:

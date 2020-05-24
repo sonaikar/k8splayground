@@ -22,5 +22,12 @@ spec:
           - name: webport
             containerPort: 80
             protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 20m
+            memory: 64Mi
 
 
