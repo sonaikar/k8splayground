@@ -1,0 +1,40 @@
+
+
+# generate a private key
+openssl genrsa -out ramneek.key 2048
+
+# generate csr (Certificate Signing Request)
+openssl req -new -key ramneek.key -out ramneek.csr -subj "/CN=rameek/O=qa/O=cetdevops.com"
+openssl req -new -key ram.key -out ram.csr -subj "/CN=ram/O=qa/O=cetdevops.com"
+
+# Sign the Certificate request
+openssl x509 -req -CA ca.crt -CAkey ca.key -CAcreateserial -days 730 -in ramneek.csr -out ramneek.crt
+
+# Set kubeconfig credentials
+kubectl config set-credentials ramneek --client-certificate=/Users/sonaikar/.kube/users/ramneek.crt --client-key=/Users/sonaikar/.kube/users/ramneek.key
+
+# Set kubeconfig context
+kubectl config set-context qa-ramneek --cluster=minikube  --user=ramneek --namespace=qa
+
+
+# generate a private key
+openssl genrsa -out ram.key 2048
+
+# generate csr (Certificate Signing Request)
+openssl req -new -key ram.key -out ram.csr -subj "/CN=ram/O=qa/O=cetdevops.com"
+
+# Sign the Certificate request
+openssl x509 -req -CA ca.crt -CAkey ca.key -CAcreateserial -days 730 -in ram.csr -out ram.crt
+
+
+# Set kubeconfig credentials
+kubectl config set-credentials ram --client-certificate=/Users/sonaikar/.kube/users/ram.crt --client-key=/Users/sonaikar/.kube/users/ram.key
+
+# Set kubeconfig context
+kubectl config set-context qa-ram --cluster=minikube  --user=ram
+
+static token/static password:
+password,username,user-id,groupname
+
+Oauth:
+

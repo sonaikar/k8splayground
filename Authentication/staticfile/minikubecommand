@@ -1,0 +1,7 @@
+minikube mount /Users/sonaikar/PycharmProjects/kubernetes/Authentication/staticfile/:/var/lib/minikube/certs/mini
+
+minikube start --extra-config=apiserver.basic-auth-file="/var/lib/minikube/certs/mini/users.csv"
+
+# minikube --extra-config=apiserver.Authentication.PasswordFile.BasicAuthFile=/Users/sonaikar/PycharmProjects/kubernetes/Authentication/staticfile/users.csv start
+
+curl https://$(minikube ip):8443/api/v1/namespaces

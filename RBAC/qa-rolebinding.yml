@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: QARoleBinding
+  namespace: qa
+subjects:
+  - kind: Group
+    name: qa
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  apiGroup: rbac.authorization.k8s.io
+  name: qa-role

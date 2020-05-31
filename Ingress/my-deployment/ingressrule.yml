@@ -1,0 +1,25 @@
+ apiVersion: networking.k8s.io/v1beta1
+ kind: Ingress
+ metadata:
+   name: echoserver-ingress
+   namespace: nginx-ingress
+   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$1
+     ingress.kubernetes.io/whitelist-source-range: 99.234.210.32/32
+     nginx.org/server-snippets: |
+       location / {
+         return 302 /ram;
+       }
+ spec:
+   rules:
+   - host: hello-world.kcluster.cetdevops.com
+     http:
+       paths:
+       - path: /v1
+         backend:
+           serviceName: echoserver-svc-1
+           servicePort: 80
+       - path: /ram
+         backend:
+           serviceName: echoserver-svc-2
+           servicePort: 80

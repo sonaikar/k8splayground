@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-1
+  namespace: nginx-ingress
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: echoserver-1
+  template:
+    metadata:
+      labels:
+        app: echoserver-1
+    spec:
+      containers:
+      - name: echoserver-1
+#        image: gcr.io/kubernetes-e2e-test-images/echoserver:2.1
+#        image: gcr.io/google-containers/echoserver
+        image: gcr.io/google-samples/hello-app:1.0
+        ports:
+        - containerPort: 8080
+
