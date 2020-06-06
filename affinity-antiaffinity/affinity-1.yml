@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: failure-domain.beta.kubernetes.io/zone
+            operator: In
+            values:
+            - us-east-1c
+          - key: app
+            operator: In
+            values:
+              - web
+  containers:
+  - name: with-node-affinity
+    image: nginx
+
+#Total weight = 255
+#weight:  1
+#preferredDuringScheduling:
+#    preference:
+#      MatchLabel:
+#        app: web
+#
+#
+#Server 1 = 100+1 = 101  CPU/Mem/.... label app=web
+#Server 2 = 100   = 100   CPU/mem/...
+

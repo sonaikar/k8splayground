@@ -1,0 +1,156 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: database
+spec:
+  podSelector: # selects the grouping of pods to which the policy applies, an empty podSelector selects all pods in the namespace
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 172.17.0.0/16
+        except:
+        - 172.17.1.0/24
+    - namespaceSelector:
+        matchLabels:
+          project: myproject
+    - podSelector:
+        matchLabels:
+          role: frontend
+    ports:
+    - protocol: TCP
+      port: 5432
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 10.0.0.0/24
+    ports:
+    - protocol: TCP
+      port: 5978
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default.postgres
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes:
+   - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: balance
+    - namespaceSelector:
+        matchLabels:
+          project: myapp
+
+---
+# pitfall - Allow DNS while restricting Egress traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default.balance
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: balance
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+  - to:
+    - ipBlock:
+        cidr: 8.8.8.8/32
+    ports:
+    - protocol: UDP
+      port: 53
+
+# The highlighted ‘to’ element is empty and therefore it implicitly selects all pods in all namespaces allowing balance to perform DNS lookups against the Kubernetes DNS service which is normally running in namespace kube-system.
+
+---
+
+# While this works, it is overly permissive and insecure — it also allows DNS lookups outside the cluster!
+
+# 1. Allow DNS only inside the cluster by adding a namespaceSelector:
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default.balance
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: balance
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: UDP
+      port: 53
+  policyTypes:
+  - Egress
+---
+# 2. 2. Allow DNS only in the kube-system namespace. To do that, you need to add a label to the kube-system namespace: kubectl label namespace kube-system namespace=kube-system and specify it in the
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default.balance
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: balance
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          namespace: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  policyTypes:
+  - Egress
+---
+
+#3.  Allow DNS at the namespace level, so you don’t need to specify it per service:
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default.dns
+  namespace: default
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: UDP
+      port: 53
+---
