@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: grafana
+    meta.helm.sh/release-namespace: default
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    helm.sh/chart: grafana-2.0.1
+  name: grafana-lb
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 3000
+    protocol: TCP
+    targetPort: dashboard
+  selector:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+  sessionAffinity: None
+  type: LoadBalancer

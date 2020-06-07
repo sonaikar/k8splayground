@@ -1,0 +1,47 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    meta.helm.sh/release-name: prom
+    meta.helm.sh/release-namespace: default
+  generation: 1
+  labels:
+    app.kubernetes.io/component: kubelet
+    app.kubernetes.io/instance: prom
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prometheus-operator
+    helm.sh/chart: prometheus-operator-0.19.1
+  name: prom-prometheus-operator-kubelet
+  selfLink: /apis/monitoring.coreos.com/v1/namespaces/default/servicemonitors/prom-prometheus-operator-kubelet
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    honorLabels: true
+    port: https-metrics
+    scheme: https
+    tlsConfig:
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      insecureSkipVerify: true
+      serverName: kubernetes
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    honorLabels: true
+    path: /metrics/cadvisor
+    port: https-metrics
+    scheme: https
+    tlsConfig:
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      insecureSkipVerify: true
+      serverName: kubernetes
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    interval: 30s
+    port: http-metrics
+    scheme: http
+    tlsConfig:
+      insecureSkipVerify: true
+  jobLabel: k8s-app
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  selector:
+    matchLabels:
+      k8s-app: kubelet
