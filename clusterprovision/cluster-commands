@@ -1,0 +1,31 @@
+kubeadm init \
+    --apiserver-advertise-address 10.0.0.111 \
+    --cri-socket /var/run/crio/crio.sock \
+    --pod-network-cidr=10.244.0.0/16 \
+    --upload-certs
+
+
+Apply networking on cluster:
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+curl https://docs.projectcalico.org/manifests/calico.yaml -O
+kubectl apply -f calico.yaml
+
+========================================================================
+
+To generate new token:
+kubeadm token create
+
+Discovery token hash:
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | \
+   openssl dgst -sha256 -hex | sed 's/^.* //'
+
+Join node in cluster:
+kubeadm join 10.0.0.111:6443 --token 8izqsm.3i3qj4qe1e5z3ssz \
+	--discovery-token-ca-cert-hash sha256:874deb1e72a88197207fe402bd4768cb416814c548b1b6f94c8070143617bee3
+
+kubeadm join 10.0.0.111:6443 --token 8izqsm.3i3qj4qe1e5z3ssz \
+	--discovery-token-ca-cert-hash sha256:874deb1e72a88197207fe402bd4768cb416814c548b1b6f94c8070143617bee3 \
+	--control-plane
+
+========================================================================
