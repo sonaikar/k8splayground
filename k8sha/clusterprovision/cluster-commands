@@ -1,0 +1,16 @@
+kubeadm init \
+    --apiserver-advertise-address 192.168.56.111 \
+    --cri-socket /var/run/crio/crio.sock \
+    --pod-network-cidr=10.244.0.0/16 \
+    --control-plane-endpoint 10.0.0.110 \
+    --upload-certs
+
+
+Apply networking on cluster:
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+curl https://docs.projectcalico.org/manifests/calico.yaml -O
+kubectl apply -f calico.yaml
+
+========================================================================
+

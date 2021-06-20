@@ -1,0 +1,58 @@
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of the control-plane node running the following command on each as root:
+
+  kubeadm join 10.0.0.110:6443 --token 2dun54.zx4edcoqqd9ch1z7 \
+	--discovery-token-ca-cert-hash sha256:21f0231a60a3a3b101023e8540de7e4dcb91841086588d82c98f7702cddf422a \
+	--control-plane --certificate-key e6cabe22959f936b9b9b6bba202305e02bac358758c05cdeef455b9b8510ea3e
+
+Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
+As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use
+"kubeadm init phase upload-certs --upload-certs" to reload certs afterward.
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 10.0.0.110:6443 --token 2dun54.zx4edcoqqd9ch1z7 \
+	--discovery-token-ca-cert-hash sha256:21f0231a60a3a3b101023e8540de7e4dcb91841086588d82c98f7702cddf422a
+
+========================================================================================================
+
+kubeadm join 10.0.0.110:6443 --token 2dun54.zx4edcoqqd9ch1z7 \
+--discovery-token-ca-cert-hash sha256:21f0231a60a3a3b101023e8540de7e4dcb91841086588d82c98f7702cddf422a \
+--control-plane --certificate-key e6cabe22959f936b9b9b6bba202305e02bac358758c05cdeef455b9b8510ea3e --apiserver-advertise-address 192.168.56.112
+
+
+kubeadm join 10.0.0.110:6443 --token 2dun54.zx4edcoqqd9ch1z7 \
+--discovery-token-ca-cert-hash sha256:21f0231a60a3a3b101023e8540de7e4dcb91841086588d82c98f7702cddf422a \
+--control-plane --certificate-key e6cabe22959f936b9b9b6bba202305e02bac358758c05cdeef455b9b8510ea3e  --apiserver-advertise-address 192.168.56.113
+
+kubeadm join 10.0.0.110:6443 --token 69nj3t.xk45nezu0jve5m7a \
+	--discovery-token-ca-cert-hash sha256:b3966285a632f49bd30fb59372bdb1db28e6fbbb30735015e47239bbe151dec9
