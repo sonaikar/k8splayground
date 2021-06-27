@@ -35,16 +35,16 @@ aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="cetdevops.co
         "TTL": 300,
         "ResourceRecords": [
           {
-            "Value": "ns-922.awsdns-51.net"
+            "Value": "ns-1553.awsdns-02.co.uk"
           },
           {
-            "Value": "ns-1489.awsdns-58.org"
+            "Value": "ns-1441.awsdns-52.org"
           },
           {
-            "Value": "ns-300.awsdns-37.com"
+            "Value": "ns-728.awsdns-27.net"
           },
           {
-            "Value": "ns-1648.awsdns-14.co.uk"
+            "Value": "s-447.awsdns-55.com"
           }
         ]
       }
@@ -76,6 +76,8 @@ aws ec2 describe-images --region us-east-1 --output table \
   --query "sort_by(Images, &CreationDate)[*].[CreationDate,Name,ImageId]" \
   --filters "Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-*"
 
+ami-0dd76f917833aac4b
+
 ###########################################################################################################
 # Expose cluster details
 export NAME=kcluster.cetdevops.com
@@ -87,14 +89,14 @@ kops create cluster \
     --master-count 3 \
     --zones us-east-1a,us-east-1b,us-east-1c \
     --master-zones us-east-1a,us-east-1b,us-east-1c  \
-    --dns-zone Z0152517T0FAIUKH6N2U \
+    --dns-zone Z00457361HYFPNJXJ6K0F \
     --node-size t2.medium \
     --master-size t2.medium \
     --topology public \
     --networking calico \
     --cloud-labels "Team=DevOps,Owner=Sameer Sonaikar" \
-    --image "ami-05801d0a3c8e4c443" \
-    --state "s3://kcluster-cetdevops-com-state-store" \
+    --image "ami-0dd76f917833aac4b" \
+    --state "${KOPS_STATE_STORE}" \
     ${NAME}
 
     --bastion \

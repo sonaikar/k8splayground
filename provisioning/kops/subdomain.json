@@ -1,0 +1,27 @@
+{
+  "Comment": "Create a subdomain NS record in the parent domain",
+  "Changes": [
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "kcluster.cetdevops.com",
+        "Type": "NS",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "ns-893.awsdns-47.net"
+          },
+          {
+            "Value": "ns-1682.awsdns-18.co.uk"
+          },
+          {
+            "Value": "ns-393.awsdns-49.com"
+          },
+          {
+            "Value": "ns-1459.awsdns-54.org"
+          }
+        ]
+      }
+    }
+  ]
+}
