@@ -14,11 +14,12 @@ spec:
       labels:
         name: fluentd-elasticsearch
     spec:
-      tolerations:
-      # this toleration is to have the daemonset runnable on master nodes
-      # remove it if your masters can't run pods
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+#      tolerations:
+#      # this toleration is to have the daemonset runnable on master nodes
+#      # remove it if your masters can't run pods
+#      - key: node-role.kubernetes.io/master
+#        operator: Exists
+#        effect: NoSchedule
       containers:
       - name: fluentd-elasticsearch
         image: quay.io/fluentd_elasticsearch/fluentd:v2.5.2
@@ -42,3 +43,4 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
+
