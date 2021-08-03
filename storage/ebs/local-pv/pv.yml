@@ -6,10 +6,10 @@ metadata:
     type: aws-pv
 spec:
   capacity:
-    storage: 30Gi
+    storage: 100Gi
   accessModes:
   - ReadWriteOnce
   awsElasticBlockStore:
-    volumeID: VOLUME_ID_GOES_HERE
+    volumeID: vol-0db445cc7726083d3
     fsType: ext4
   storageClassName: gp2

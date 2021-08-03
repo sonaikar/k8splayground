@@ -9,16 +9,16 @@
         "TTL": 300,
         "ResourceRecords": [
           {
-            "Value": "ns-893.awsdns-47.net"
+            "Value": "ns-1553.awsdns-02.co.uk"
           },
           {
-            "Value": "ns-1682.awsdns-18.co.uk"
+            "Value": "ns-1015.awsdns-62.net"
           },
           {
-            "Value": "ns-393.awsdns-49.com"
+            "Value": "ns-1449.awsdns-53.org"
           },
           {
-            "Value": "ns-1459.awsdns-54.org"
+            "Value": "ns-152.awsdns-19.com"
           }
         ]
       }

@@ -12,8 +12,8 @@ aws iam create-access-key --user-name kops
 
 ###########################################################################################################
 #  Setup AWS credentials
-export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
-export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
+export AWS_ACCESS_KEY_ID=$(aws --profile=kops configure get aws_access_key_id)
+export AWS_SECRET_ACCESS_KEY=$(aws --profile=kops configure get aws_secret_access_key)
 
 ###########################################################################################################
 # Create Subdomain
@@ -35,16 +35,16 @@ aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="cetdevops.co
         "TTL": 300,
         "ResourceRecords": [
           {
-            "Value": "ns-1553.awsdns-02.co.uk"
+            "Value": "ns-1533.awsdns-63.org"
           },
           {
-            "Value": "ns-1441.awsdns-52.org"
+            "Value": "ns-694.awsdns-22.net"
           },
           {
-            "Value": "ns-728.awsdns-27.net"
+            "Value": "ns-32.awsdns-04.com"
           },
           {
-            "Value": "s-447.awsdns-55.com"
+            "Value": "ns-1704.awsdns-21.co.uk"
           }
         ]
       }
@@ -70,13 +70,16 @@ aws s3api create-bucket \
 aws s3api put-bucket-versioning --bucket kcluster-cetdevops-com-state-store  --versioning-configuration Status=Enabled
 
 ###########################################################################################################
+# Route 53 zone id
+aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="kcluster.cetdevops.com.") | .Id'
+###########################################################################################################
 # find aws image to use https://github.com/kubernetes/kops/blob/master/docs/operations/images.md
 aws ec2 describe-images --region us-east-1 --output table \
   --owners 099720109477 \
   --query "sort_by(Images, &CreationDate)[*].[CreationDate,Name,ImageId]" \
   --filters "Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-*"
 
-ami-0dd76f917833aac4b
+ami-019212a8baeffb0fa
 
 ###########################################################################################################
 # Expose cluster details
@@ -89,13 +92,13 @@ kops create cluster \
     --master-count 3 \
     --zones us-east-1a,us-east-1b,us-east-1c \
     --master-zones us-east-1a,us-east-1b,us-east-1c  \
-    --dns-zone Z00457361HYFPNJXJ6K0F \
+    --dns-zone Z04878071K5SCGR0RPXBY \
     --node-size t2.medium \
     --master-size t2.medium \
     --topology public \
     --networking calico \
     --cloud-labels "Team=DevOps,Owner=Sameer Sonaikar" \
-    --image "ami-0dd76f917833aac4b" \
+    --image "ami-019212a8baeffb0fa" \
     --state "${KOPS_STATE_STORE}" \
     ${NAME}
 
