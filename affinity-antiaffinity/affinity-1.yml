@@ -3,22 +3,34 @@ kind: Pod
 metadata:
   name: with-node-affinity
 spec:
+  containers:
+  - name: with-node-affinity
+    image: nginx
   affinity:
     nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+##          - key: failure-domain.beta.kubernetes.io/zone
+##            operator: In
+##            values:
+##            - us-east-1c
+#          - key: disktype
+#            operator: In
+#            values:
+#              - ssd
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+            - ssd
           - key: failure-domain.beta.kubernetes.io/zone
             operator: In
             values:
             - us-east-1c
-          - key: app
-            operator: In
-            values:
-              - web
-  containers:
-  - name: with-node-affinity
-    image: nginx
 
 #Total weight = 255
 #weight:  1
@@ -30,4 +42,22 @@ spec:
 #
 #Server 1 = 100+1 = 101  CPU/Mem/.... label app=web
 #Server 2 = 100   = 100   CPU/mem/...
+
+
+#
+# affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#            - key: "disktype"
+#              operator: NotIn
+#              values: ["slow"]
+
+
+
+
+
+
+
 

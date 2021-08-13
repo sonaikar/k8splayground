@@ -4,10 +4,25 @@ metadata:
   name: nginx
   labels:
     env: test
-  namespace: default
+  namespace: test
 spec:
   containers:
   - name: nginx
     image: nginx
-  nodeSelector:
-    app: web
+#  nodeSelector:
+#    disktype: slow
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-1
+  labels:
+    env: test
+  namespace: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+#  nodeSelector:
+#    disktype: slow

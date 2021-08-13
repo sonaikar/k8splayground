@@ -1,3 +1,16 @@
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: www
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi
+#  storageClassName: fast-disks
+#---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,7 +28,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: web
+  name: my-web-sts
 spec:
   selector:
     matchLabels:
@@ -42,7 +55,9 @@ spec:
       name: www
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "my-storage-class"
+      storageClassName: "fast-disks"
       resources:
         requests:
           storage: 1Gi
+
+---

@@ -4,6 +4,8 @@ metadata:
   name: nginxconfigmap
 data:
   default.conf: |
+    # This is Sameer's configmap file
+    # This is second change
     server {
         listen       443;
         server_name  localhost;

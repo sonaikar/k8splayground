@@ -23,3 +23,10 @@
          backend:
            serviceName: echoserver-svc-2
            servicePort: 80
+   - host: venkat.kcluster.cetdevops.com
+     http:
+       paths:
+       - path: /
+         backend:
+           serviceName: venkat-svc-1
+           servicePort: 80

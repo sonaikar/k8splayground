@@ -5,4 +5,6 @@ metadata:
 data:
   # property-like keys; each key maps to a simple value
   myName: "Sameer"
-  myFriend: "Ramneek"
+  myFriend: "Venkat"
+  anotherFriend: "Prakash"
+  myDabtabaseName: "mongo-venkat"

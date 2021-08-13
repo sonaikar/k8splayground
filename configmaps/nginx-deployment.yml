@@ -13,8 +13,8 @@ spec:
     metadata:
       labels:
         app: webserver
-      annotations:
-        configmap.reloader.stakater.com/reload: "nginx-config"
+#      annotations:
+#        configmap.reloader.stakater.com/reload: "nginx-config"
     spec:
       containers:
       - name: web

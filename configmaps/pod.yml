@@ -7,21 +7,26 @@ spec:
     - name: demo
       image: nginx:1.16
       env:
+        - name: myDabtabaseName
+          valueFrom:
+            configMapKeyRef:
+              key: myDabtabaseName
+              name: game-demo
         # Define the environment variable
-        - name: myName
-          valueFrom:
-            configMapKeyRef:
-              name: game-demo
-              key: myName
-        - name: myFriend
-          valueFrom:
-            configMapKeyRef:
-              name: game-demo
-              key: myFriend
-      volumeMounts:
-      - name: config
-        mountPath: "/config"
-        readOnly: true
+#        - name: myName
+#          valueFrom:
+#            configMapKeyRef:
+#              name: game-demo
+#              key: myName
+#        - name: myFriend
+#          valueFrom:
+#            configMapKeyRef:
+#              name: game-demo-1
+#              key: myName
+#      volumeMounts:
+#      - name: config
+#        mountPath: "/config"
+#        readOnly: true
   volumes:
     # You set volumes at the Pod level, then mount them into containers inside that Pod
     - name: config

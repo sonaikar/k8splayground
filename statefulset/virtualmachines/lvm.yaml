@@ -1,0 +1,20 @@
+root@k8sworker3:/disks/local-provisioner/testvol# history
+    1  fdisk -l
+    2  mount
+    3  lsblk
+    4  fdisk -l
+    5  vgcreate vg0 /dev/sdb
+    6  vgdisplay
+    7  lvcreate -n testvol -L 5G vg0
+    8  lvcreate -n testvol -L 4G vg0
+    9  lvdisplay
+   10  mkfs.ext4 /dev/vg0/testvol
+   11  df -h
+   12  lsblk
+   13  fdisk -l
+   14  vi /etc/fstab
+   15  mount -a
+   16  mkdir /disks/local-provisioner/testvol
+   17  mkdir -p /disks/local-provisioner/testvol
+   18  mount -a
+   19  cd /disks/local-provisioner/testvol/
