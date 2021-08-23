@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: aws-pvc
+  name: pvc-promserver
 spec:
+  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 30Gi
-  storageClassName: ebs-storage-class
-
+      storage: 20Gi

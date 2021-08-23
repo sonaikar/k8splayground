@@ -1,0 +1,12 @@
+image:
+ repository: cloudposse/fluentd-datadog-logs
+ tag: 0.1.0
+env:
+ open:
+   DATADOG_SOURCE: datadog
+ secret:
+  DATADOG_API_KEY: 64e7131113efa9425555e45dee6dab56
+## Mount fluentd configs from chart into tmp dir, because all required configs build in image
+## https://github.com/cloudposse/fluentd-datadog-logs/tree/master/rootfs/fluentd/etc/fluentd.conf
+## https://github.com/cloudposse/fluentd-datadog-logs/blob/master/rootfs/fluentd/etc/fluent.conf
+configDir: /tmp/conf

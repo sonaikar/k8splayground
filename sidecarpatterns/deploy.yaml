@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+    spec:
+      volumes:
+      - name: logs-on-cloud-storage
+        persistentVolumeClaim:
+          claimName: aws-pvc
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf # place ConfigMap `nginx-conf` on /etc/nginx
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      - name: shared-data
+        emptyDir: {}
+      nodeSelector:
+        topology.kubernetes.io/zone: us-east-2a
+      containers:
+      - image: nginx:1.18
+        name: nginx
+        resources:
+          requests:
+            cpu: 200m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 64Mi
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: logs-on-cloud-storage
+          mountPath: /var/log/nginx
+        - name: nginx-conf
+          mountPath: /etc/nginx mount nginx-conf volumn to /etc/nginx
+          readOnly: true
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+      - image: bash
+        name: sidecar
+        command: ["/bin/sh","-c","tail -f /var/log/nginx/access.log"]
+        volumeMounts:
+        - name: logs-on-cloud-storage
+          mountPath: /var/log/nginx
+      - name: log-generator
+        image: debian
+        volumeMounts:
+        - name: shared-data
+          mountPath: /poddata
+        - name: logs-on-cloud-storage
+          mountPath: /nginxlogs
+        command: ["/bin/sh","-c"]
+        args:
+        -  while true; do
+           echo -en '\n';
+           printenv MY_NODE_NAME MY_POD_NAME MY_POD_NAMESPACE >> /poddata/index.html;
+           printenv MY_POD_IP MY_POD_SERVICE_ACCOUNT >> /nginxlogs/access.log;
+           sleep 10;
+           done;
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+
+
+#           printenv MY_NODE_NAME MY_POD_NAME MY_POD_NAMESPACE >> /poddata/index.html;
+#           printenv MY_POD_IP MY_POD_SERVICE_ACCOUNT; >> /nginxlogs/access.log;

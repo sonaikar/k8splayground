@@ -6,7 +6,7 @@ spec:
   volumes:
   - name: cloud-storage
     persistentVolumeClaim:
-      claimName: aws-pvc-sc-new
+      claimName: aws-pvc
   containers:
   - name: nginx
     image: nginx
