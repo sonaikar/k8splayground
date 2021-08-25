@@ -1,8 +1,8 @@
 kubectl get namespaces --show-labels
 
 
-kubectl apply -f middleware-netpol.yaml
-kubectl apply -f database-netpol.yaml
+kubectl apply -f middleware-netpol.yml; 
+kubectl apply -f database-netpol.yml
 
 kubectl create deployment nginx --image=ewoutp/docker-nginx-curl -n web
 

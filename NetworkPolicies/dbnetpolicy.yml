@@ -12,26 +12,26 @@ spec:
   - Egress
   ingress:
   - from:
-    - ipBlock:
-        cidr: 172.17.0.0/16
-        except:
-        - 172.17.1.0/24
+#    - ipBlock:
+#        cidr: 10.244.0.0/16
+#        except:
+#        - 10.244.10.0/24
     - namespaceSelector:
         matchLabels:
-          project: myproject
+          project: middleware
     - podSelector:
         matchLabels:
-          role: frontend
+          role: tomcat
     ports:
     - protocol: TCP
       port: 5432
-  egress:
-  - to:
-    - ipBlock:
-        cidr: 10.0.0.0/24
-    ports:
-    - protocol: TCP
-      port: 5978
+#  egress:
+#  - to:
+#    - ipBlock:
+#        cidr: 10.0.0.0/24
+#    ports:
+#    - protocol: TCP
+#      port: 5978
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -96,6 +96,8 @@ spec:
   podSelector:
     matchLabels:
       app: balance
+  policyTypes:
+  - Egress
   egress:
   - to:
     - podSelector:
@@ -106,8 +108,7 @@ spec:
     ports:
     - protocol: UDP
       port: 53
-  policyTypes:
-  - Egress
+
 ---
 # 2. 2. Allow DNS only in the kube-system namespace. To do that, you need to add a label to the kube-system namespace: kubectl label namespace kube-system namespace=kube-system and specify it in the
 

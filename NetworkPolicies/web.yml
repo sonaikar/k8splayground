@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-network-policy
+  namespace: web
+spec:
+  podSelector: # selects the grouping of pods to which the policy applies, an empty podSelector selects all pods in the namespace
+    matchLabels:
+      role: webserver
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - {}
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443
+  egress:
+  - {}
+#  - to:
+#    - namespaceSelector:
+#        matchLabels:
+#          project: middleware
+#    - podSelector:
+#        matchLabels:
+#          role: tomcat
+#    - ipBlock:
+#        cidr: 10.244.0.0/16 # Office Network
+#    ports:
+#    - protocol: TCP
+#      port: 8080
+
+
