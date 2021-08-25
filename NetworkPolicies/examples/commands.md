@@ -74,34 +74,4 @@ kubectl exec -it nginx-f67f7854c-ldsbb -n web -- curl nginx.database
 ^Ccommand terminated with exit code 130
 
 
-
-
-
-beta.kubernetes.io/arch=amd64,
-beta.kubernetes.io/instance-type=t2.medium,
-beta.kubernetes.io/os=linux,
-failure-domain.beta.kubernetes.io/region=us-east-1,
-failure-domain.beta.kubernetes.io/zone=us-east-1c,
-kops.k8s.io/instancegroup=master-us-east-1c,
-kubernetes.io/arch=amd64,
-kubernetes.io/hostname=ip-172-20-105-229.ec2.internal,
-kubernetes.io/os=linux,
-kubernetes.io/role=master,
-node-role.kubernetes.io/master=
-
-
-beta.kubernetes.io/arch=amd64,
-beta.kubernetes.io/instance-type=t2.medium,
-beta.kubernetes.io/os=linux,
-failure-domain.beta.kubernetes.io/region=us-east-1,
-failure-domain.beta.kubernetes.io/zone=us-east-1a,
-kops.k8s.io/instancegroup=nodes,
-kubernetes.io/arch=amd64,
-kubernetes.io/hostname=ip-172-20-36-66.ec2.internal,
-kubernetes.io/os=linux,
-kubernetes.io/role=node,
-node-role.kubernetes.io/node=
-
-
-
  
