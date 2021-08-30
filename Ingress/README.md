@@ -8,3 +8,19 @@ NGINX Ingress controller works with both NGINX and NGINX Plus and supports the s
 
 Additionally, several NGINX and NGINX Plus features are available as extensions to the Ingress resource via annotations and the ConfigMap resource. In addition to HTTP, NGINX Ingress controller supports load balancing Websocket, gRPC, TCP and UDP applications. See ConfigMap and Annotations docs to learn more about the supported features and customization options.
 
+
+
+http://foo.bar.com/bar -> service1
+http://bar.bar.com/foo -> service2
+http://foo.bar.com/foo -> service2
+
+
+http://cetbiz.com/ -> cetbizService 
+http://amazon.com/ -> amazonService -> pods 
+
+DNS -> 
+  cetbiz.com  A   10.0.0.10 
+  amazon.com  A   10.0.0.10 
+
+HA proxy ->  10.0.0.10 -> Ingress 
+Load Balancer ->  Ingress 

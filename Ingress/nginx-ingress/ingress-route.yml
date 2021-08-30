@@ -1,0 +1,22 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: example-app-prod-api-tls
+  annotations:
+    helm.sh/hook: "post-install, post-upgrade"
+  labels:
+
+    helm.sh/chart: example-app-0.1.0
+    app.kubernetes.io/name: example-app
+    app.kubernetes.io/instance: example-app-prod
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: "Host(`www.cetbizcloud.com`)"
+    kind: Rule
+    services:
+      - name: "echoserver-svc-1"
+        port: 80

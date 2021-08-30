@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+    name: example-app-prod
+    annotations:
+        external-dns.alpha.kubernetes.io/hostname: "www.cetbizcloud.com"
+        external-dns.alpha.kubernetes.io/target: "cetbizcloud.com"
+spec:
+    rules:
+        - host: "cetbizcloud.com"

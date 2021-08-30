@@ -1,0 +1,32 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: simpleingressroute
+  namespace: example
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`exampleweb.cetdevops.com`) && PathPrefix(`/venkat`)
+    kind: Rule
+    services:
+    - name: whoami
+      port: 80
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroutetls
+  namespace: example
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`exampleweb.cetdevops.com`) && PathPrefix(`/prakash`)
+    kind: Rule
+    services:
+    - name: whoami
+      port: 80
+  tls:
+    certResolver: myresolver

@@ -1,0 +1,29 @@
+#apiVersion: traefik.containo.us/v1alpha1
+#kind: IngressRoute
+#metadata:
+#  name: dashboard
+#  namespace: kube-system
+#spec:
+#  entryPoints:
+#    - web
+#  routes:
+#    - match: Host(`example.cetdevops.com`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+#      kind: Rule
+#      services:
+#        - name: traefik-dashboard
+#          port: 9000
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dashboard
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`example.cetdevops.com`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
