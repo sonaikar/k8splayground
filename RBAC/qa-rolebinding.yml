@@ -11,3 +11,9 @@ roleRef:
   kind: Role
   apiGroup: rbac.authorization.k8s.io
   name: qa-role
+
+
+---
+
+kubectl config set-credentials venkat --client-certificate=venkat.crt  --client-key=venkat.key
+kubectl config set-context venkat-context --cluster=minikube --namespace=qa --user=venkat

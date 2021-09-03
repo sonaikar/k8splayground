@@ -6,7 +6,7 @@ spec:
   minAvailable: 2
   selector:
     matchLabels:
-      app: webserver
+      app: nginx
 
 ---
 #
