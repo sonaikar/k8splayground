@@ -1,26 +1,23 @@
 #!/usr/bin/env bash
-
 modprobe overlay
 modprobe br_netfilter
-
 
 # Install cri-o runtime instead of docker
 export OS=xUbuntu_20.04
 export VERSION=1.20
+
+apt-get upgrade -y && apt-get update -y
+
 cat <<EOF | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
 deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/ /
 EOF
 cat <<EOF | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable:cri-o:$VERSION.list
 deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/$VERSION/$OS/ /
 EOF
-
-
 curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/Release.key | sudo apt-key --keyring  /etc/apt/trusted.gpg.d/libcontainers.gpg add -
 curl -L https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:$VERSION/$OS/Release.key | sudo apt-key --keyring /etc/apt/trusted.gpg.d/libcontainers-cri-o.gpg add -
-
-
 apt-get update
-apt-get install -y cri-o cri-o-runc
+apt-get -y install cri-o cri-o-runc
 systemctl daemon-reload
 systemctl start crio
 systemctl enable crio
@@ -28,7 +25,7 @@ systemctl enable crio
 cat<<EOF | sudo /etc/sysctl.conf
 net.ipv4.ip_forward=1
 EOF
-#echo '1' > /proc/sys/net/ipv4/ip_forward
+echo '1' > /proc/sys/net/ipv4/ip_forward
 #net.ipv4.ip_forward = 1
 sysctl -p /etc/sysctl.conf
 
@@ -36,7 +33,6 @@ sysctl -p /etc/sysctl.conf
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
-net.ipv4.ip_forward                = 1
 EOF
 sysctl --system
 
