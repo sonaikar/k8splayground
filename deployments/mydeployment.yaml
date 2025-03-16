@@ -4,7 +4,7 @@ metadata:
   labels:
      app: webserver1
   name: webapplication
-  namespace: staging
+  namespace: default
 spec:
   revisionHistoryLimit: 10
 #  strategy:
