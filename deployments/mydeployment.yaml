@@ -14,7 +14,7 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
   minReadySeconds: 5
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: webserver
@@ -24,8 +24,9 @@ spec:
         app: webserver
     spec:
       containers:
-        - image: nginx:1.16
+        - image: praqma/network-multitool
           name: webserver
+          command: ["sh", "-c", "sleep 3600"]
           resources:
             requests:
               cpu: 100m
