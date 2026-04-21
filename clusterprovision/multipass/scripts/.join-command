@@ -1,1 +1,0 @@
-kubeadm join 10.0.0.150:6443 --token bagig3.97tdptd76cwompo1 --discovery-token-ca-cert-hash sha256:7a5773b2da7765893186a40cb57069b461d49777922690d6b754c04b6612e4bf 
