@@ -268,8 +268,12 @@ wait_for_nodes_ready() {
 }
 
 cleanup_temp_files() {
+    log_info "Cleaning up sensitive temporary files..."
     rm -f "${SCRIPT_DIR}/.join-command" "${SCRIPT_DIR}/.cert-key"
 }
+
+# Ensure cleanup runs on exit (success or failure)
+trap cleanup_temp_files EXIT
 
 main() {
     log_info "Starting HA Kubernetes cluster creation..."
@@ -292,7 +296,7 @@ main() {
     # Phase 3: Finalize
     copy_kubeconfig
     wait_for_nodes_ready
-    cleanup_temp_files
+    # cleanup_temp_files is called automatically via trap EXIT
     
     echo ""
     log_info "=========================================="
