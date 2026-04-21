@@ -1,0 +1,63 @@
+#cloud-config
+package_update: true
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gpg
+  - conntrack
+
+write_files:
+  - path: /etc/modules-load.d/k8s.conf
+    content: |
+      br_netfilter
+      overlay
+  - path: /etc/sysctl.d/k8s.conf
+    content: |
+      net.bridge.bridge-nf-call-iptables = 1
+      net.ipv4.ip_forward = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.ipv6.conf.all.disable_ipv6 = 1
+      net.ipv6.conf.default.disable_ipv6 = 1
+      net.ipv6.conf.lo.disable_ipv6 = 1
+  - path: /etc/default/kubelet
+    content: |
+      KUBELET_EXTRA_ARGS=--container-runtime=remote --container-runtime-endpoint=unix:///var/run/crio/crio.sock
+
+runcmd:
+  # Disable swap (kubelet requirement)
+  - sed -i.bak '/ swap / s/^\(.*\)$/#\1/' /etc/fstab
+  - swapoff -a
+
+  # Kernel params
+  - modprobe br_netfilter
+  - sysctl --system
+
+  # Install CRI-O 1.33 on Ubuntu 22.04 (Jammy)
+  - export OS=xUbuntu_22.04
+  - export CRIO_VERSION=1.24
+  - echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+  - echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/$CRIO_VERSION/$OS/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable:cri-o:$CRIO_VERSION.list
+  - curl -L https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:$CRIO_VERSION/$OS/Release.key | sudo apt-key add -
+  - curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/Release.key | sudo apt-key add -
+  - apt-get update
+  - apt-get install -y cri-o cri-o-runc containernetworking-plugins
+  - systemctl enable --now crio
+
+  # Kubernetes repo (v1.34 stable)
+  - mkdir -p /etc/apt/keyrings
+  - bash -lc 'curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg'
+  - bash -lc 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /" > /etc/apt/sources.list.d/kubernetes.list'
+  - apt-get install -y kubelet kubeadm kubectl
+  - apt-mark hold kubelet kubeadm kubectl
+
+#  # Initialize control plane (using Calico pod CIDR)
+#  - kubeadm init --pod-network-cidr=192.168.0.0/16
+#
+#  # Configure kubectl for ubuntu user
+#  - bash -lc 'mkdir -p /home/ubuntu/.kube'
+#  - bash -lc 'cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config'
+#  - bash -lc 'chown ubuntu:ubuntu /home/ubuntu/.kube/config'
+#
+#  # Install Calico CNI
+#  - su - ubuntu -c "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/calico.yaml"
