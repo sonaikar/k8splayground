@@ -23,6 +23,13 @@ write_files:
       overlay
       br_netfilter
 
+  - path: /etc/crictl.yaml
+    content: |
+      runtime-endpoint: unix:///run/containerd/containerd.sock
+      image-endpoint: unix:///run/containerd/containerd.sock
+      timeout: 10
+      debug: false
+
   - path: /tmp/install-k8s.sh
     permissions: '0755'
     content: |
@@ -84,8 +91,6 @@ write_files:
       apt-get install -y kubelet kubeadm kubectl
       apt-mark hold kubelet kubeadm kubectl
       
-      # Configure crictl (now that it's installed with kubernetes packages)
-      crictl config runtime-endpoint unix:///run/containerd/containerd.sock
       
       systemctl enable kubelet
       

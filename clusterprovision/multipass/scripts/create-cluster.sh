@@ -236,12 +236,8 @@ copy_kubeconfig() {
     log_info "Copying kubeconfig to ${kubeconfig_path}..."
     multipass exec "${master}" -- sudo cat /etc/kubernetes/admin.conf > "${kubeconfig_path}"
     
-    # Update server address to use LB
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' -E "s|server: https://[^:]+:6443|server: https://${LB_IP}:6443|" "${kubeconfig_path}"
-    else
-        sed -i -E "s|server: https://[^:]+:6443|server: https://${LB_IP}:6443|" "${kubeconfig_path}"
-    fi
+    # Update server address to use LB (perl handles in-place edit reliably on both macOS and Linux)
+    perl -i -pe "s|server: https://[^:]+:6443|server: https://${LB_IP}:6443|g" "${kubeconfig_path}"
     
     log_info "Kubeconfig saved. Use: export KUBECONFIG=${kubeconfig_path}"
 }
