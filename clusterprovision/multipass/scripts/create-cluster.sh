@@ -14,6 +14,9 @@ WORKER_IPS=("10.0.0.156" "10.0.0.157")
 NETWORK_INTERFACE="en0"
 POD_CIDR="10.244.0.0/16"
 LAUNCH_TIMEOUT="900"  # Timeout in seconds for VM launch (cloud-init can be slow)
+CNI="cilium"          # CNI to install: calico or cilium (default: cilium)
+CALICO_VERSION="v3.31.4"
+CILIUM_VERSION="1.19.4"
 
 # Colors for output
 RED='\033[0;31m'
@@ -24,6 +27,26 @@ NC='\033[0m' # No Color
 log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --cni)
+                CNI="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown argument: $1"
+                echo "Usage: $0 [--cni calico|cilium]"
+                exit 1
+                ;;
+        esac
+    done
+    if [[ "${CNI}" != "calico" && "${CNI}" != "cilium" ]]; then
+        log_error "Invalid CNI '${CNI}'. Must be 'calico' or 'cilium'"
+        exit 1
+    fi
+}
 
 vm_exists() {
     local vm_name=$1
@@ -180,10 +203,9 @@ init_first_master() {
     # Setup kubectl for ubuntu user
     multipass exec "${master}" -- bash -c "mkdir -p ~/.kube && sudo cp /etc/kubernetes/admin.conf ~/.kube/config && sudo chown \$(id -u):\$(id -g) ~/.kube/config"
     
-    # Install Calico CNI
-    log_info "Installing Calico CNI..."
-    multipass exec "${master}" -- bash -c "curl -sO https://raw.githubusercontent.com/projectcalico/calico/v3.31.4/manifests/calico.yaml && kubectl apply -f calico.yaml"
-    
+    # Install CNI
+    install_cni "${master}"
+
     # Get join commands
     log_info "Generating join commands..."
     
@@ -195,6 +217,37 @@ init_first_master() {
     echo "${CERT_KEY}" > "${SCRIPT_DIR}/.cert-key"
     
     log_info "First master initialized successfully"
+}
+
+install_cni() {
+    local master=$1
+    if [[ "${CNI}" == "calico" ]]; then
+        log_info "Installing Calico CNI ${CALICO_VERSION}..."
+        multipass exec "${master}" -- bash -c "
+            curl -sO https://raw.githubusercontent.com/projectcalico/calico/${CALICO_VERSION}/manifests/calico.yaml
+            kubectl apply -f calico.yaml
+            rm -f calico.yaml
+        "
+    elif [[ "${CNI}" == "cilium" ]]; then
+        log_info "Installing Cilium CNI ${CILIUM_VERSION} with Hubble..."
+        multipass exec "${master}" -- bash -c "
+            # Install helm if not present
+            if ! command -v helm &>/dev/null; then
+                curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+            fi
+            helm repo add cilium https://helm.cilium.io/ 2>/dev/null || true
+            helm repo update
+            helm install cilium cilium/cilium --version ${CILIUM_VERSION} \
+                --namespace kube-system \
+                --set k8sServiceHost=${LB_IP} \
+                --set k8sServicePort=6443 \
+                --set ipam.mode=kubernetes \
+                --set hubble.enabled=true \
+                --set hubble.relay.enabled=true \
+                --set hubble.ui.enabled=true
+        "
+    fi
+    log_info "CNI (${CNI}) installation complete"
 }
 
 join_other_masters() {
@@ -272,7 +325,9 @@ cleanup_temp_files() {
 trap cleanup_temp_files EXIT
 
 main() {
+    parse_args "$@"
     log_info "Starting HA Kubernetes cluster creation..."
+    log_info "CNI: ${CNI}"
     echo ""
     
     # Phase 1: Launch all VMs
@@ -309,3 +364,4 @@ main() {
 }
 
 main "$@"
+
