@@ -24,9 +24,8 @@ spec:
         app: webserver
     spec:
       containers:
-        - image: praqma/network-multitool
+        - image: nginx
           name: webserver
-          command: ["sh", "-c", "sleep 3600"]
           resources:
             requests:
               cpu: 100m
@@ -34,3 +33,13 @@ spec:
             limits:
               cpu: 100m
               memory: 64Mi
+        # - image: praqma/network-multitool
+        #   name: webserver
+        #   command: ["sh", "-c", "sleep 3600"]
+        #   resources:
+        #     requests:
+        #       cpu: 100m
+        #       memory: 64Mi
+        #     limits:
+        #       cpu: 100m
+        #       memory: 64Mi
