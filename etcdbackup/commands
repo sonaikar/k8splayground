@@ -1,0 +1,49 @@
+# Verify if crictl is available on the server. If not, install using below commands. 
+ARCH=$(uname -m)
+if [ "$ARCH" = "aarch64" ]; then
+  ARCH_SUFFIX="arm64"
+  CNI_ARCH="arm"
+else
+  ARCH_SUFFIX="amd64"
+  CNI_ARCH="amd64"
+fi
+
+# Install crictl (cri-tools)
+CRICTL_VERSION="v1.33.0"
+wget -q https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${ARCH_SUFFIX}.tar.gz
+tar Cxzf /usr/local/bin crictl-${CRICTL_VERSION}-linux-${ARCH_SUFFIX}.tar.gz
+rm crictl-${CRICTL_VERSION}-linux-${ARCH_SUFFIX}.tar.gz
+
+
+# Install etcdctl locally if not already available. 
+apt install -y etcd-client
+
+
+# Backup etcd 
+ETCDCTL_API=3 etcdctl --endpoints=https://10.0.0.151:2379 \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+snapshot save /tmp/etcd-snapshot.db
+
+# To restore etcd backup 
+# Find intial-cluster details from command line or ps 
+# Example, ps -aefl | grep initial
+# Below are required details gathered from the above command
+# initial-cluster=k8s-master-1=https://10.0.0.151:2380 
+# initial-advertise-peer-urls=https://10.0.0.151:2380
+# --data-dir=/var/lib/etcd
+#--initial-cluster-token=etcd-cluster-new
+
+# The command will be 
+ETCDCTL_API=3 etcdctl \
+--endpoints=https://10.0.0.151:2379 \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+--name=k8s-master-1 \
+--data-dir=/var/lib/etcd-from-backup \
+--initial-cluster=k8s-master-1=https://10.0.0.151:2380 \
+--initial-cluster-token=etcd-cluster-new \
+--initial-advertise-peer-urls=https://10.0.0.151:2380 \
+snapshot restore /tmp/etcd-snapshot.db

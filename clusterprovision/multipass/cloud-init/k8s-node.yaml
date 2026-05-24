@@ -74,6 +74,12 @@ write_files:
       install -m 755 runc.${ARCH_SUFFIX} /usr/local/sbin/runc
       rm runc.${ARCH_SUFFIX}
       
+      # Install crictl (cri-tools)
+      CRICTL_VERSION="v1.33.0"
+      wget -q https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${ARCH_SUFFIX}.tar.gz
+      tar Cxzf /usr/local/bin crictl-${CRICTL_VERSION}-linux-${ARCH_SUFFIX}.tar.gz
+      rm crictl-${CRICTL_VERSION}-linux-${ARCH_SUFFIX}.tar.gz
+      
       # Install CNI plugins
       CNI_VERSION="1.9.1"
       mkdir -p /opt/cni/bin
