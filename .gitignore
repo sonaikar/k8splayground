@@ -2,3 +2,31 @@
 venv/*
 venv/
 !/provisioning/kops/secrets.md
+
+# Kubeconfig files — contain private keys and cluster credentials
+kubeconfig
+*.kubeconfig
+.kube/
+
+# Terraform state and secrets
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# Binary files
+*.tar.gz
+*.zip
+*.gz
+cilium-binary/
+
+# Vagrant state
+.vagrant/
+
+# AWS credentials
+*.pem
+*.key
