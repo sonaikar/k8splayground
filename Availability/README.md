@@ -12,18 +12,25 @@ SLO  →  what you target internally
 SLA  →  what you promise externally (with consequences)
 ```
 
-```mermaid
-flowchart TD
-    SLI["🔍 SLI\nService Level Indicator\nWhat you measure"]
-    SLO["🎯 SLO\nService Level Objective\nWhat you target internally"]
-    SLA["📋 SLA\nService Level Agreement\nWhat you promise externally"]
-
-    SLI -->|"drives"| SLO
-    SLO -->|"sets ceiling for"| SLA
-
-    style SLI fill:#4CAF50,color:#fff,stroke:#388E3C
-    style SLO fill:#2196F3,color:#fff,stroke:#1565C0
-    style SLA fill:#FF5722,color:#fff,stroke:#BF360C
+```
++---------------------------+
+|  SLI  Service Level       |  <-- What you MEASURE
+|       Indicator           |      (e.g. 99.5% uptime this minute)
++---------------------------+
+            |
+            | drives
+            v
++---------------------------+
+|  SLO  Service Level       |  <-- What you TARGET internally
+|       Objective           |      (e.g. must stay above 99.9%)
++---------------------------+
+            |
+            | sets ceiling for
+            v
++---------------------------+
+|  SLA  Service Level       |  <-- What you PROMISE externally
+|       Agreement           |      (e.g. guarantee 99.5% or refund)
++---------------------------+
 ```
 
 ---
@@ -81,10 +88,14 @@ If 40 min downtime consumed this month:
   → Prioritise reliability work over features
 ```
 
-```mermaid
-pie title Error Budget — 30 days (total allowance: 43.2 min)
-    "Used downtime (40 min)" : 40
-    "Remaining budget (3.2 min)" : 3.2
+```
+Error Budget — 30 days (total allowance: 43.2 min)
+
+[##########################################################....]
+ ^                                                         ^
+ Used: 40 min (93%)                          Remaining: 3.2 min (7%)
+
+  Status: CRITICAL — nearly exhausted, freeze risky deployments!
 ```
 
 ---
@@ -113,27 +124,33 @@ SLA (external):  "We guarantee 99.5% uptime or you receive a credit"
 
 ## SLI → SLO → SLA Flow
 
-```mermaid
-flowchart TD
-    A["📝 Customer signs SLA\n99.5% uptime guaranteed"]
-    B["⚙️ Engineering sets SLO\n99.9% uptime target\n(buffer above SLA)"]
-    C["📊 Monitoring tracks SLI\nActual uptime measured\nevery minute"]
-    D{"SLI approaching\nSLO threshold?"}
-    E["🚨 Alert fires\nOn-call engineer paged"]
-    F["🔧 Fix incident"]
-    G{"SLO\nbreached?"}
-    H["✅ SLA safe\nNo penalties"]
-    I["❌ SLA breached\nCredits owed to customer"]
-
-    A --> B --> C --> D
-    D -- No --> C
-    D -- Yes --> E --> F --> G
-    G -- No --> H
-    G -- Yes --> I
-
-    style H fill:#4CAF50,color:#fff
-    style I fill:#f44336,color:#fff
-    style E fill:#FF9800,color:#fff
+```
+[Customer signs SLA: 99.5% uptime guaranteed]
+            |
+            v
+[Engineering sets SLO: 99.9% uptime target]  <-- buffer above SLA
+            |
+            v
+[Monitoring tracks SLI every minute] <---------+
+            |                                   |
+            v                                   |
+     SLI near SLO? ------- NO ------------------+  (keep monitoring)
+            |
+           YES
+            |
+            v
+    [ALERT fires — on-call paged]
+            |
+            v
+       [Fix incident]
+            |
+            v
+      SLO breached? ------ NO -----> [SLA safe, no penalties]
+            |
+           YES
+            |
+            v
+    [SLA breached — credits owed to customer]
 ```
 
 ---
@@ -182,18 +199,22 @@ MTTD = 5 minutes
 Lower MTTD = problems caught faster.  
 Improved by: better monitoring, lower alert thresholds, synthetic probes.
 
-```mermaid
-gantt
-    title Incident Lifecycle — All Four Metrics
-    dateFormat HH:mm
-    axisFormat %H:%M
+```
+Time:  00:00                02:00  02:05             02:35              03:35
+         |                    |      |                  |                  |
+         v                    v      v                  v                  v
+---------+--------------------+------+------------------+------------------+--->
+         |                    |      |                  |
+         |<---- MTTF -------->|      |<----- MTTR ----->|
+         |   (system uptime)  |      |   (repair time)  |
+                              |<--->|
+                               MTTD
+                             (detect)
 
-    section Timeline
-    System running normally (MTTF)    :done,    t1, 00:00, 120m
-    Failure occurs                    :crit,    t2, 02:00, 1m
-    Undetected (MTTD window = 5 min)  :active,  t3, 02:00, 5m
-    Recovery in progress (MTTR)       :crit,    t4, 02:05, 30m
-    System restored — running again   :done,    t5, 02:35, 60m
+  [  System Running OK  ]  [X] [!!!] [  Recovering...  ] [  Running OK  ]
+         GREEN             FAIL ALERT      RED                 GREEN
+
+  |<----------------------- MTBF = MTTF + MTTR ----------------------->|
 ```
 
 ---
@@ -223,31 +244,21 @@ MTBF = MTTF + MTTR
 Availability = MTTF / (MTTF + MTTR)
 ```
 
-```mermaid
-flowchart LR
-    A(["🟢 System\nRunning"])
-    B(["🔴 Failure\nOccurs"])
-    C(["🟡 Alert\nFired"])
-    D(["🔧 Team\nResponds"])
-    E(["🟢 System\nRestored"])
+```
+  +----------------+   MTTF    +----------+   MTTD   +---------+
+  | System Running | --------> | FAILURE  | -------> |  ALERT  |
+  |    (green)     |           |  (red)   |          | (amber) |
+  +----------------+           +----------+          +---------+
+          ^                                                |
+          |                                          MTTR  |
+          |                                               v
+          |                                      +------------------+
+          +------- next MTTF ------------------- | System Restored  |
+                                                 |    (green)       |
+                                                 +------------------+
 
-    A -- "MTTF\n(time to failure)" --> B
-    B -- "MTTD\n(time to detect)" --> C
-    C -- "MTTR\n(time to repair)" --> D
-    D --> E
-    E -- "next MTTF" --> B
-
-    subgraph MTBF ["MTBF = MTTF + MTTR"]
-        A
-        B
-        E
-    end
-
-    style A fill:#4CAF50,color:#fff
-    style B fill:#f44336,color:#fff
-    style C fill:#FF9800,color:#fff
-    style D fill:#2196F3,color:#fff
-    style E fill:#4CAF50,color:#fff
+  MTBF = MTTF + MTTR
+  Availability = MTTF / (MTTF + MTTR)
 ```
 
 ### Example
@@ -271,31 +282,36 @@ Availability = 20,160 / (20,160 + 60) = 99.7%
 | 99.99% | 52 minutes | 4.4 minutes | E-commerce, customer-facing APIs |
 | 99.999% | 5.2 minutes | 26 seconds | Payments, telecom, critical infra |
 
-```mermaid
-xychart-beta
-    title "Annual Downtime by Availability Target (minutes)"
-    x-axis ["99%", "99.9%", "99.95%", "99.99%", "99.999%"]
-    y-axis "Downtime (minutes/year)" 0 --> 5400
-    bar [5256, 526, 263, 52, 5]
+```
+Annual Downtime (minutes) — lower bar = higher reliability
+
+99%     | ################################################################  5256 min
+99.9%   | ######                                                             526 min
+99.95%  | ###                                                                263 min
+99.99%  | #                                                                   52 min
+99.999% | .                                                                    5 min
+         0                                                               5400 min
 ```
 
 ---
 
 ## Cost vs Reliability Tradeoff
 
-```mermaid
-quadrantChart
-    title Cost vs Reliability Tradeoff
-    x-axis Low Cost --> High Cost
-    y-axis Low Reliability --> High Reliability
-    quadrant-1 Ideal but expensive
-    quadrant-2 Over-engineered
-    quadrant-3 Risky
-    quadrant-4 Good balance
-    Cold Backup: [0.1, 0.2]
-    Pilot Light + Velero: [0.35, 0.55]
-    Warm Standby: [0.6, 0.75]
-    Active-Active Multi-Region: [0.9, 0.95]
+```
+High  |                          |  Active-Active (*)
+ Rel. |                          |  Multi-Region
+      |         Warm Standby (*) |
+      |                          |
+      | Pilot Light + Velero (*) |
+      |                          |
+      |  Cold Backup (*)         |
+ Low  |                          |
+      +---Low Cost ---- High Cost-->
+
+  (*)  Cold Backup        = cheapest, lowest reliability (RTO ~4hr)
+  (*)  Pilot Light+Velero = good balance  (RTO ~30min)
+  (*)  Warm Standby       = pre-provisioned cluster (RTO ~5min)
+  (*)  Active-Active      = most expensive, highest reliability (RTO ~0)
 ```
 
 ---
