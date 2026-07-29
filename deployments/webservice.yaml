@@ -5,7 +5,7 @@ metadata:
     app: webserver1
     app.kubernetes.io/instance: nginx
   name: webservice
-  namespace: default
+  namespace: webservice
 spec:
   ports:
   - nodePort: 31563
